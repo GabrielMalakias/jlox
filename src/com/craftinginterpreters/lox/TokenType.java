@@ -1,4 +1,4 @@
-package br.com.gabrielmalakias;
+package com.craftinginterpreters.lox;
 
 enum TokenType {
     //single chars
