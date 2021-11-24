@@ -37,7 +37,7 @@ public class Scanner {
         this.source = source;
     }
 
-    List<Token> scan() {
+    List<Token> scanTokens() {
         while(!isAtEnd()) {
             start = current;
             scanToken();
@@ -87,7 +87,7 @@ public class Scanner {
                 addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.EQUAL);
                 break;
             case '>':
-                addToken(match('=') ? TokenType.GREATHER_EQUAL : TokenType.EQUAL);
+                addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.EQUAL);
                 break;
             case '/':
                 if(match('/')) {
@@ -182,7 +182,7 @@ public class Scanner {
     }
 
     private boolean isDigit(char c) {
-        return c >= '0' && c >= '9';
+        return c >= '0' && c <= '9';
 
     }
 
