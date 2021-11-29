@@ -6,19 +6,15 @@ import java.util.List;
 import static com.craftinginterpreters.lox.TokenType.*;
 
 public class Parser {
-    private static class ParseError extends RuntimeException {}
-
     private final List<Token> tokens;
     private int current = 0;
-
     Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
 
-
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
-        while(!isAtEnd()) {
+        while (!isAtEnd()) {
             statements.add(declaration());
         }
 
@@ -41,6 +37,7 @@ public class Parser {
 
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
+        if (match(LEFT_BRACE)) return new Stmt.Block(block());
 
         return expressionStatement();
     }
@@ -68,15 +65,26 @@ public class Parser {
         return new Stmt.Expression(expr);
     }
 
+    private List<Stmt> block() {
+        List<Stmt> statements = new ArrayList<>();
+
+        while(!check(RIGHT_BRACE) && !isAtEnd()) {
+            statements.add(declaration());
+        }
+
+        consume(RIGHT_BRACE, "Expect '}' after block");
+        return statements;
+    }
+
     private Expr assignment() {
         Expr expr = equality();
 
-        if(match(EQUAL)) {
+        if (match(EQUAL)) {
             Token equals = previous();
             Expr value = assignment();
 
             if (expr instanceof Expr.Variable) {
-                Token name = ((Expr.Variable)expr).name;
+                Token name = ((Expr.Variable) expr).name;
                 return new Expr.Assign(name, value);
             }
 
@@ -88,7 +96,7 @@ public class Parser {
 
     private Expr equality() {
         Expr expr = comparison();
-        while(match(BANG_EQUAL, EQUAL_EQUAL)) {
+        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
             Token operator = previous();
             Expr right = comparison();
             expr = new Expr.Binary(expr, operator, right);
@@ -100,7 +108,7 @@ public class Parser {
     private Expr comparison() {
         Expr expr = term();
 
-        while(match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+        while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
             Token operator = previous();
             Expr right = term();
             expr = new Expr.Binary(expr, operator, right);
@@ -109,7 +117,7 @@ public class Parser {
         return expr;
     }
 
-    private Expr term()  {
+    private Expr term() {
         Expr expr = factor();
 
         while (match(MINUS, PLUS)) {
@@ -134,7 +142,7 @@ public class Parser {
     }
 
     private Expr unary() {
-        if(match(BANG, MINUS)) {
+        if (match(BANG, MINUS)) {
             Token operator = previous();
             Expr right = unary();
             return new Expr.Unary(operator, right);
@@ -166,7 +174,7 @@ public class Parser {
     }
 
     private boolean match(TokenType... types) {
-        for(TokenType type : types) {
+        for (TokenType type : types) {
             if (check(type)) {
                 advance();
                 return true;
@@ -178,12 +186,18 @@ public class Parser {
 
     private void syncronize() {
         advance();
-        while(!isAtEnd()) {
-            if(previous().type == SEMICOLON) return;
+        while (!isAtEnd()) {
+            if (previous().type == SEMICOLON) return;
 
             switch (peek().type) {
-                case CLASS: case FOR: case FUN: case IF: case PRINT:
-                case RETURN: case VAR: case WHILE:
+                case CLASS:
+                case FOR:
+                case FUN:
+                case IF:
+                case PRINT:
+                case RETURN:
+                case VAR:
+                case WHILE:
                     return;
             }
 
@@ -222,6 +236,9 @@ public class Parser {
     private ParseError error(Token token, String message) {
         Lox.error(token, message);
         return new ParseError();
+    }
+
+    private static class ParseError extends RuntimeException {
     }
 }
 

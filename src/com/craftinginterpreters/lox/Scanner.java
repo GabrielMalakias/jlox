@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Scanner {
-    private final String source;
-    private final List<Token> tokens = new ArrayList<>();
-    private int start = 0;
-    private int current = 0;
-    private int line = 1;
     private static final Map<String, TokenType> keywords;
 
     static {
@@ -33,12 +28,18 @@ public class Scanner {
         keywords.put("while", TokenType.WHILE);
     }
 
+    private final String source;
+    private final List<Token> tokens = new ArrayList<>();
+    private int start = 0;
+    private int current = 0;
+    private int line = 1;
+
     Scanner(String source) {
         this.source = source;
     }
 
     List<Token> scanTokens() {
-        while(!isAtEnd()) {
+        while (!isAtEnd()) {
             start = current;
             scanToken();
         }
@@ -48,7 +49,7 @@ public class Scanner {
     }
 
     private boolean isAtEnd() {
-       return current >= source.length();
+        return current >= source.length();
     }
 
     private char advance() {
@@ -67,16 +68,36 @@ public class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
-            case '(': addToken(TokenType.LEFT_PAREN); break;
-            case ')': addToken(TokenType.RIGHT_PAREN); break;
-            case '{': addToken(TokenType.LEFT_BRACE); break;
-            case '}': addToken(TokenType.RIGHT_BRACE); break;
-            case ',': addToken(TokenType.COMMA); break;
-            case '.': addToken(TokenType.DOT); break;
-            case '-': addToken(TokenType.MINUS); break;
-            case '+': addToken(TokenType.PLUS); break;
-            case ';': addToken(TokenType.SEMICOLON); break;
-            case '*': addToken(TokenType.STAR); break;
+            case '(':
+                addToken(TokenType.LEFT_PAREN);
+                break;
+            case ')':
+                addToken(TokenType.RIGHT_PAREN);
+                break;
+            case '{':
+                addToken(TokenType.LEFT_BRACE);
+                break;
+            case '}':
+                addToken(TokenType.RIGHT_BRACE);
+                break;
+            case ',':
+                addToken(TokenType.COMMA);
+                break;
+            case '.':
+                addToken(TokenType.DOT);
+                break;
+            case '-':
+                addToken(TokenType.MINUS);
+                break;
+            case '+':
+                addToken(TokenType.PLUS);
+                break;
+            case ';':
+                addToken(TokenType.SEMICOLON);
+                break;
+            case '*':
+                addToken(TokenType.STAR);
+                break;
             case '!':
                 addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
                 break;
@@ -90,8 +111,8 @@ public class Scanner {
                 addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.EQUAL);
                 break;
             case '/':
-                if(match('/')) {
-                    while(peek() != '\n' && !isAtEnd()) advance();
+                if (match('/')) {
+                    while (peek() != '\n' && !isAtEnd()) advance();
                 } else {
                     addToken(TokenType.SLASH);
                 }
@@ -107,7 +128,7 @@ public class Scanner {
                 line++;
                 break;
             default:
-                if(isDigit(c)) {
+                if (isDigit(c)) {
                     number();
                 } else if (isAlpha(c)) {
                     identifier();
@@ -119,7 +140,7 @@ public class Scanner {
     }
 
     private void identifier() {
-        while(isAlphanumeric(peek())) advance();
+        while (isAlphanumeric(peek())) advance();
 
         String text = source.substring(start, current);
         TokenType type = keywords.get(text);
@@ -128,12 +149,12 @@ public class Scanner {
     }
 
     private void string() {
-        while(peek() != '"' && !isAtEnd()) {
-            if(peek() == '\n') line++;
+        while (peek() != '"' && !isAtEnd()) {
+            if (peek() == '\n') line++;
             advance();
         }
 
-        if(isAtEnd()) {
+        if (isAtEnd()) {
             Lox.error(line, "Undeterminated String.");
             return;
         }
@@ -145,7 +166,7 @@ public class Scanner {
     }
 
     private void number() {
-        while(isDigit(peek())) advance();
+        while (isDigit(peek())) advance();
 
         if (peek() == '.' && isDigit(peekNext())) {
             advance();
@@ -165,9 +186,9 @@ public class Scanner {
     }
 
     private char peek() {
-       if(isAtEnd()) return '\0';
+        if (isAtEnd()) return '\0';
 
-       return source.charAt(current);
+        return source.charAt(current);
     }
 
     private char peekNext() {
