@@ -20,3 +20,20 @@ var c = "global c";
 print a;
 print b;
 print c;
+
+var x = 0;
+var y = 1;
+
+if (x == y) {
+  print "TRUE";
+} else {
+  print "FALSE";
+}
+
+print "Hi" or 3;
+
+var i = 0;
+while (i != 3) {
+  print "Hello from lox";
+  i = i + 1;
+}
