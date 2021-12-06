@@ -21,6 +21,8 @@ print a;
 print b;
 print c;
 
+
+// Conditional
 var x = 0;
 var y = 1;
 
@@ -32,8 +34,19 @@ if (x == y) {
 
 print "Hi" or 3;
 
+// Print three times the same phrase
 var i = 0;
 while (i != 3) {
   print "Hello from lox";
   i = i + 1;
+}
+
+// Fibonacci
+var a = 0;
+var temp;
+
+for (var b = 1; a < 100; b = temp + b) {
+  print a;
+  temp = a;
+  a = b;
 }
