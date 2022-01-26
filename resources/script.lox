@@ -95,3 +95,38 @@ var a = "global";
   var a = "block";
   showA();
 }
+
+print "------- Class --------";
+
+class Greetings {
+  execute() {
+    return "Hello World!";
+  }
+}
+
+print Greetings;
+
+class Bagel {}
+var bagel = Bagel();
+print bagel;
+
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch";
+  }
+}
+
+Bacon().eat();
+
+class Thing {
+  getCallback() {
+    fun localFunction() {
+      print this;
+    }
+
+    return localFunction;
+  }
+}
+
+var callback = Thing().getCallback();
+callback();
